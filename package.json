@@ -1,16 +1,16 @@
 {
-	"name": "underscore-node",
-	"version": "0.0.0",
-	"description": "Underscore for Node.js without cross-browser checks",
-	"main": "underscore.js",
-	"scripts": {
-		"test": "mocha test/**/**.js"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/joonho1101/underscore-node.git"
-	},
-	"keywords": [
+  "name": "underscore-node",
+  "version": "0.0.0",
+  "description": "Underscore for Node.js without cross-browser checks",
+  "main": "lib/underscore.js",
+  "scripts": {
+    "test": "mocha test/**/**.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joonho1101/underscore-node.git"
+  },
+  "keywords": [
     "underscore",
     "underscore.js",
     "node",
@@ -18,14 +18,18 @@
     "utility",
     "belt",
     "utilities"
-	],
-	"author": {
-		"name": "Joon Ho Cho",
-		"email": "joonho1101@gmail.com",
-		"url": "https://github.com/joonho1101"
-	},
-	"license": "MIT",
-	"bugs": {
-		"url": "https://github.com/joonho1101/underscore-node/issues"
-	}
+  ],
+  "author": {
+    "name": "Joon Ho Cho",
+    "email": "joonho1101@gmail.com",
+    "url": "https://github.com/joonho1101"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/joonho1101/underscore-node/issues"
+  },
+  "devDependencies": {
+    "mocha": "~1.12.1",
+    "should": "~1.2.2"
+  }
 }
