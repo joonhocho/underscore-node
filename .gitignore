@@ -1,3 +1,14 @@
+.*.swp
+._*
+.DS_Store
+.hg
+.lock-wscript
+.svn
+.wafpickle-*
+CVS
+npm-debug.log
+node_modules
+
 lib-cov
 *.seed
 *.log
@@ -10,5 +21,3 @@ lib-cov
 pids
 logs
 results
-
-npm-debug.log
