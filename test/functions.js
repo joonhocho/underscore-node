@@ -1,365 +1,510 @@
-$(document).ready(function() {
+(function () {
+	"use strict";
 
-  module("Functions");
+	var _ = require("../lib/underscore.js"),
+		assert = require("chai").assert,
+		equal = assert.equal,
+		deepEqual = assert.deepEqual,
+		ok = assert.ok,
+		raises = assert.Throw;
 
-  test("bind", function() {
-    var context = {name : 'moe'};
-    var func = function(arg) { return "name: " + (this.name || arg); };
-    var bound = _.bind(func, context);
-    equal(bound(), 'name: moe', 'can bind a function to a context');
+	describe("Functions", function () {
 
-    bound = _(func).bind(context);
-    equal(bound(), 'name: moe', 'can do OO-style binding');
+		it("bind", function () {
+			var context = {
+				name: "moe"
+			};
+			var func = function (arg) {
+				return "name: " + (this && this.name || arg);
+			};
+			var bound = _.bind(func, context);
+			equal(bound(), "name: moe", "can bind a function to a context");
 
-    bound = _.bind(func, null, 'curly');
-    equal(bound(), 'name: curly', 'can bind without specifying a context');
+			bound = _(func).bind(context);
+			equal(bound(), "name: moe", "can do OO-style binding");
 
-    func = function(salutation, name) { return salutation + ': ' + name; };
-    func = _.bind(func, this, 'hello');
-    equal(func('moe'), 'hello: moe', 'the function was partially applied in advance');
+			bound = _.bind(func, null, "curly");
+			equal(bound(), "name: curly", "can bind without specifying a context");
 
-    func = _.bind(func, this, 'curly');
-    equal(func(), 'hello: curly', 'the function was completely applied in advance');
+			func = function (salutation, name) {
+				return salutation + ": " + name;
+			};
+			func = _.bind(func, this, "hello");
+			equal(func("moe"), "hello: moe", "the function was partially applied in advance");
 
-    func = function(salutation, firstname, lastname) { return salutation + ': ' + firstname + ' ' + lastname; };
-    func = _.bind(func, this, 'hello', 'moe', 'curly');
-    equal(func(), 'hello: moe curly', 'the function was partially applied in advance and can accept multiple arguments');
+			func = _.bind(func, this, "curly");
+			equal(func(), "hello: curly", "the function was completely applied in advance");
 
-    func = function(context, message) { equal(this, context, message); };
-    _.bind(func, 0, 0, 'can bind a function to `0`')();
-    _.bind(func, '', '', 'can bind a function to an empty string')();
-    _.bind(func, false, false, 'can bind a function to `false`')();
+			func = function (salutation, firstname, lastname) {
+				return salutation + ": " + firstname + " " + lastname;
+			};
+			func = _.bind(func, this, "hello", "moe", "curly");
+			equal(func(), "hello: moe curly", "the function was partially applied in advance and can accept multiple arguments");
 
-    // These tests are only meaningful when using a browser without a native bind function
-    // To test this with a modern browser, set underscore's nativeBind to undefined
-    var F = function () { return this; };
-    var Boundf = _.bind(F, {hello: "moe curly"});
-    var newBoundf = new Boundf();
-    equal(newBoundf.hello, undefined, "function should not be bound to the context, to comply with ECMAScript 5");
-    equal(Boundf().hello, "moe curly", "When called without the new operator, it's OK to be bound to the context");
-    ok(newBoundf instanceof F, "a bound instance is an instance of the original function");
-  });
+			func = function (context, message) {
+				equal(this, context, message);
+			};
+			_.bind(func, 0, 0, "can bind a function to `0`")();
+			_.bind(func, "", "", "can bind a function to an empty string")();
+			_.bind(func, false, false, "can bind a function to `false`")();
 
-  test("partial", function() {
-    var obj = {name: 'moe'};
-    var func = function() { return this.name + ' ' + _.toArray(arguments).join(' '); };
+			// These tests are only meaningful when using a browser without a native bind function
+			// To test this with a modern browser, set underscore's nativeBind to undefined
+			var F = function () {
+				return this;
+			};
+			var Boundf = _.bind(F, {
+				hello: "moe curly"
+			});
+			var newBoundf = new Boundf();
+			equal(newBoundf.hello, undefined, "function should not be bound to the context, to comply with ECMAScript 5");
+			equal(Boundf().hello, "moe curly", "When called without the new operator, it's OK to be bound to the context");
+			ok(newBoundf instanceof F, "a bound instance is an instance of the original function");
+		});
 
-    obj.func = _.partial(func, 'a', 'b');
-    equal(obj.func('c', 'd'), 'moe a b c d', 'can partially apply');
-  });
+		it("partial", function () {
+			var obj = {
+				name: "moe"
+			};
+			var func = function () {
+				return this.name + " " + _.toArray(arguments).join(" ");
+			};
 
-  test("bindAll", function() {
-    var curly = {name : 'curly'}, moe = {
-      name    : 'moe',
-      getName : function() { return 'name: ' + this.name; },
-      sayHi   : function() { return 'hi: ' + this.name; }
-    };
-    curly.getName = moe.getName;
-    _.bindAll(moe, 'getName', 'sayHi');
-    curly.sayHi = moe.sayHi;
-    equal(curly.getName(), 'name: curly', 'unbound function is bound to current object');
-    equal(curly.sayHi(), 'hi: moe', 'bound function is still bound to original object');
+			obj.func = _.partial(func, "a", "b");
+			equal(obj.func("c", "d"), "moe a b c d", "can partially apply");
+		});
 
-    curly = {name : 'curly'};
-    moe = {
-      name    : 'moe',
-      getName : function() { return 'name: ' + this.name; },
-      sayHi   : function() { return 'hi: ' + this.name; }
-    };
+		it("bindAll", function () {
+			var curly = {
+				name: "curly"
+			}, moe = {
+					name: "moe",
+					getName: function () {
+						return "name: " + this.name;
+					},
+					sayHi: function () {
+						return "hi: " + this.name;
+					}
+				};
+			curly.getName = moe.getName;
+			_.bindAll(moe, "getName", "sayHi");
+			curly.sayHi = moe.sayHi;
+			equal(curly.getName(), "name: curly", "unbound function is bound to current object");
+			equal(curly.sayHi(), "hi: moe", "bound function is still bound to original object");
 
-    raises(function() { _.bindAll(moe); }, Error, 'throws an error for bindAll with no functions named');
+			curly = {
+				name: "curly"
+			};
+			moe = {
+				name: "moe",
+				getName: function () {
+					return "name: " + this.name;
+				},
+				sayHi: function () {
+					return "hi: " + this.name;
+				}
+			};
 
-    _.bindAll(moe, 'sayHi');
-    curly.sayHi = moe.sayHi;
-    equal(curly.sayHi(), 'hi: moe');
-  });
+			// "throws an error for bindAll with no functions named"
+			raises(function () {
+				_.bindAll(moe);
+			}, Error);
 
-  test("memoize", function() {
-    var fib = function(n) {
-      return n < 2 ? n : fib(n - 1) + fib(n - 2);
-    };
-    equal(fib(10), 55, 'a memoized version of fibonacci produces identical results');
-    fib = _.memoize(fib); // Redefine `fib` for memoization
-    equal(fib(10), 55, 'a memoized version of fibonacci produces identical results');
+			_.bindAll(moe, "sayHi");
+			curly.sayHi = moe.sayHi;
+			equal(curly.sayHi(), "hi: moe");
+		});
 
-    var o = function(str) {
-      return str;
-    };
-    var fastO = _.memoize(o);
-    equal(o('toString'), 'toString', 'checks hasOwnProperty');
-    equal(fastO('toString'), 'toString', 'checks hasOwnProperty');
-  });
+		it("memoize", function () {
+			var fib = function (n) {
+				return n < 2 ? n : fib(n - 1) + fib(n - 2);
+			};
+			equal(fib(10), 55, "a memoized version of fibonacci produces identical results");
+			fib = _.memoize(fib); // Redefine `fib` for memoization
+			equal(fib(10), 55, "a memoized version of fibonacci produces identical results");
 
-  asyncTest("delay", 2, function() {
-    var delayed = false;
-    _.delay(function(){ delayed = true; }, 100);
-    setTimeout(function(){ ok(!delayed, "didn't delay the function quite yet"); }, 50);
-    setTimeout(function(){ ok(delayed, 'delayed the function'); start(); }, 150);
-  });
+			var o = function (str) {
+				return str;
+			};
+			var fastO = _.memoize(o);
+			equal(o("toString"), "toString", "checks hasOwnProperty");
+			equal(fastO("toString"), "toString", "checks hasOwnProperty");
+		});
 
-  asyncTest("defer", 1, function() {
-    var deferred = false;
-    _.defer(function(bool){ deferred = bool; }, true);
-    _.delay(function(){ ok(deferred, "deferred the function"); start(); }, 50);
-  });
+		it("delay", function (done) {
+			var delayed = false;
+			_.delay(function () {
+				delayed = true;
+			}, 100);
+			setTimeout(function () {
+				ok(!delayed, "didn't delay the function quite yet");
+			}, 50);
+			setTimeout(function () {
+				ok(delayed, "delayed the function");
+				done();
+			}, 150);
+		});
 
-  asyncTest("throttle", 2, function() {
-    var counter = 0;
-    var incr = function(){ counter++; };
-    var throttledIncr = _.throttle(incr, 32);
-    throttledIncr(); throttledIncr();
+		it("defer", function (done) {
+			var deferred = false;
+			_.defer(function (bool) {
+				deferred = bool;
+			}, true);
+			_.delay(function () {
+				ok(deferred, "deferred the function");
+				done();
+			}, 50);
+		});
 
-    equal(counter, 1, "incr was called immediately");
-    _.delay(function(){ equal(counter, 2, "incr was throttled"); start(); }, 64);
-  });
+		it("throttle", function (done) {
+			var counter = 0;
+			var incr = function () {
+				counter++;
+			};
+			var throttledIncr = _.throttle(incr, 32);
+			throttledIncr();
+			throttledIncr();
 
-  asyncTest("throttle arguments", 2, function() {
-    var value = 0;
-    var update = function(val){ value = val; };
-    var throttledUpdate = _.throttle(update, 32);
-    throttledUpdate(1); throttledUpdate(2);
-    _.delay(function(){ throttledUpdate(3); }, 64);
-    equal(value, 1, "updated to latest value");
-    _.delay(function(){ equal(value, 3, "updated to latest value"); start(); }, 96);
-  });
+			equal(counter, 1, "incr was called immediately");
+			_.delay(function () {
+				equal(counter, 2, "incr was throttled");
+				done();
+			}, 64);
+		});
 
-  asyncTest("throttle once", 2, function() {
-    var counter = 0;
-    var incr = function(){ return ++counter; };
-    var throttledIncr = _.throttle(incr, 32);
-    var result = throttledIncr();
-    _.delay(function(){
-      equal(result, 1, "throttled functions return their value");
-      equal(counter, 1, "incr was called once"); start();
-    }, 64);
-  });
+		it("throttle arguments", function (done) {
+			var value = 0;
+			var update = function (val) {
+				value = val;
+			};
+			var throttledUpdate = _.throttle(update, 32);
+			throttledUpdate(1);
+			throttledUpdate(2);
+			_.delay(function () {
+				throttledUpdate(3);
+			}, 64);
+			equal(value, 1, "updated to latest value");
+			_.delay(function () {
+				equal(value, 3, "updated to latest value");
+				done();
+			}, 96);
+		});
 
-  asyncTest("throttle twice", 1, function() {
-    var counter = 0;
-    var incr = function(){ counter++; };
-    var throttledIncr = _.throttle(incr, 32);
-    throttledIncr(); throttledIncr();
-    _.delay(function(){ equal(counter, 2, "incr was called twice"); start(); }, 64);
-  });
+		it("throttle once", function (done) {
+			var counter = 0;
+			var incr = function () {
+				return ++counter;
+			};
+			var throttledIncr = _.throttle(incr, 32);
+			var result = throttledIncr();
+			_.delay(function () {
+				equal(result, 1, "throttled functions return their value");
+				equal(counter, 1, "incr was called once");
+				done();
+			}, 64);
+		});
 
-  asyncTest("more throttling", 3, function() {
-    var counter = 0;
-    var incr = function(){ counter++; };
-    var throttledIncr = _.throttle(incr, 30);
-    throttledIncr(); throttledIncr();
-    ok(counter == 1);
-    _.delay(function(){
-      ok(counter == 2);
-      throttledIncr();
-      ok(counter == 3);
-      start();
-    }, 85);
-  });
+		it("throttle twice", function (done) {
+			var counter = 0;
+			var incr = function () {
+				counter++;
+			};
+			var throttledIncr = _.throttle(incr, 32);
+			throttledIncr();
+			throttledIncr();
+			_.delay(function () {
+				equal(counter, 2, "incr was called twice");
+				done();
+			}, 64);
+		});
 
-  asyncTest("throttle repeatedly with results", 6, function() {
-    var counter = 0;
-    var incr = function(){ return ++counter; };
-    var throttledIncr = _.throttle(incr, 100);
-    var results = [];
-    var saveResult = function() { results.push(throttledIncr()); };
-    saveResult(); saveResult();
-    _.delay(saveResult, 50);
-    _.delay(saveResult, 150);
-    _.delay(saveResult, 160);
-    _.delay(saveResult, 230);
-    _.delay(function() {
-      equal(results[0], 1, "incr was called once");
-      equal(results[1], 1, "incr was throttled");
-      equal(results[2], 1, "incr was throttled");
-      equal(results[3], 2, "incr was called twice");
-      equal(results[4], 2, "incr was throttled");
-      equal(results[5], 3, "incr was called trailing");
-      start();
-    }, 300);
-  });
+		it("more throttling", function (done) {
+			var counter = 0;
+			var incr = function () {
+				counter++;
+			};
+			var throttledIncr = _.throttle(incr, 30);
+			throttledIncr();
+			throttledIncr();
+			ok(counter === 1);
+			_.delay(function () {
+				ok(counter === 2);
+				throttledIncr();
+				ok(counter === 3);
+				done();
+			}, 85);
+		});
 
-  asyncTest("throttle triggers trailing call when invoked repeatedly", 2, function() {
-    var counter = 0;
-    var limit = 48;
-    var incr = function(){ counter++; };
-    var throttledIncr = _.throttle(incr, 32);
+		it("throttle repeatedly with results", function (done) {
+			var counter = 0;
+			var incr = function () {
+				return ++counter;
+			};
+			var throttledIncr = _.throttle(incr, 100);
+			var results = [];
+			var saveResult = function () {
+				results.push(throttledIncr());
+			};
+			saveResult();
+			saveResult();
+			_.delay(saveResult, 50);
+			_.delay(saveResult, 150);
+			_.delay(saveResult, 160);
+			_.delay(saveResult, 230);
+			_.delay(function () {
+				equal(results[0], 1, "incr was called once");
+				equal(results[1], 1, "incr was throttled");
+				equal(results[2], 1, "incr was throttled");
+				equal(results[3], 2, "incr was called twice");
+				equal(results[4], 2, "incr was throttled");
+				equal(results[5], 3, "incr was called trailing");
+				done();
+			}, 300);
+		});
 
-    var stamp = new Date;
-    while ((new Date - stamp) < limit) {
-      throttledIncr();
-    }
-    var lastCount = counter;
-    ok(counter > 1);
+		it("throttle triggers trailing call when invoked repeatedly", function (done) {
+			var counter = 0;
+			var limit = 48;
+			var incr = function () {
+				counter++;
+			};
+			var throttledIncr = _.throttle(incr, 32);
 
-    _.delay(function() {
-      ok(counter > lastCount);
-      start();
-    }, 96);
-  });
+			var stamp = new Date();
+			while ((new Date() - stamp) < limit) {
+				throttledIncr();
+			}
+			var lastCount = counter;
+			ok(counter > 1);
 
-  asyncTest("throttle does not trigger leading call when leading is set to false", 2, function() {
-    var counter = 0;
-    var incr = function(){ counter++; };
-    var throttledIncr = _.throttle(incr, 60, {leading: false});
+			_.delay(function () {
+				ok(counter > lastCount);
+				done();
+			}, 96);
+		});
 
-    throttledIncr(); throttledIncr();
-    ok(counter === 0);
+		it("throttle does not trigger leading call when leading is set to false", function (done) {
+			var counter = 0;
+			var incr = function () {
+				counter++;
+			};
+			var throttledIncr = _.throttle(incr, 60, {
+				leading: false
+			});
 
-    _.delay(function() {
-      ok(counter == 1);
-      start();
-    }, 96);
-  });
+			throttledIncr();
+			throttledIncr();
+			ok(counter === 0);
 
-  asyncTest("more throttle does not trigger leading call when leading is set to false", 3, function() {
-    var counter = 0;
-    var incr = function(){ counter++; };
-    var throttledIncr = _.throttle(incr, 100, {leading: false});
+			_.delay(function () {
+				ok(counter === 1);
+				done();
+			}, 96);
+		});
 
-    throttledIncr();
-    _.delay(throttledIncr, 50);
-    _.delay(throttledIncr, 60);
-    _.delay(throttledIncr, 200);
-    ok(counter === 0);
+		it("more throttle does not trigger leading call when leading is set to false", function (done) {
+			var counter = 0;
+			var incr = function () {
+				counter++;
+			};
+			var throttledIncr = _.throttle(incr, 100, {
+				leading: false
+			});
 
-    _.delay(function() {
-      ok(counter == 1);
-    }, 250);
+			throttledIncr();
+			_.delay(throttledIncr, 50);
+			_.delay(throttledIncr, 60);
+			_.delay(throttledIncr, 200);
+			ok(counter === 0);
 
-    _.delay(function() {
-      ok(counter == 2);
-      start();
-    }, 350);
-  });
+			_.delay(function () {
+				ok(counter === 1);
+			}, 250);
 
-  asyncTest("one more throttle with leading: false test", 2, function() {
-    var counter = 0;
-    var incr = function(){ counter++; };
-    var throttledIncr = _.throttle(incr, 100, {leading: false});
+			_.delay(function () {
+				ok(counter === 2);
+				done();
+			}, 350);
+		});
 
-    var time = new Date;
-    while (new Date - time < 350) throttledIncr();
-    ok(counter <= 3);
+		it("one more throttle with leading: false test", function (done) {
+			var counter = 0;
+			var incr = function () {
+				counter++;
+			};
+			var throttledIncr = _.throttle(incr, 100, {
+				leading: false
+			});
 
-    _.delay(function() {
-      ok(counter <= 4);
-      start();
-    }, 200);
-  });
+			var time = new Date();
+			while (new Date() - time < 350) {
+				throttledIncr();
+			}
+			ok(counter <= 3);
 
-  asyncTest("throttle does not trigger trailing call when trailing is set to false", 4, function() {
-    var counter = 0;
-    var incr = function(){ counter++; };
-    var throttledIncr = _.throttle(incr, 60, {trailing: false});
+			_.delay(function () {
+				ok(counter <= 4);
+				done();
+			}, 200);
+		});
 
-    throttledIncr(); throttledIncr(); throttledIncr();
-    ok(counter === 1);
+		it("throttle does not trigger trailing call when trailing is set to false", function (done) {
+			var counter = 0;
+			var incr = function () {
+				counter++;
+			};
+			var throttledIncr = _.throttle(incr, 60, {
+				trailing: false
+			});
 
-    _.delay(function() {
-      ok(counter == 1);
+			throttledIncr();
+			throttledIncr();
+			throttledIncr();
+			ok(counter === 1);
 
-      throttledIncr(); throttledIncr();
-      ok(counter == 2);
+			_.delay(function () {
+				ok(counter === 1);
 
-      _.delay(function() {
-        ok(counter == 2);
-        start();
-      }, 96);
-    }, 96);
-  });
+				throttledIncr();
+				throttledIncr();
+				ok(counter === 2);
 
-  asyncTest("debounce", 1, function() {
-    var counter = 0;
-    var incr = function(){ counter++; };
-    var debouncedIncr = _.debounce(incr, 32);
-    debouncedIncr(); debouncedIncr();
-    _.delay(debouncedIncr, 16);
-    _.delay(function(){ equal(counter, 1, "incr was debounced"); start(); }, 96);
-  });
+				_.delay(function () {
+					ok(counter === 2);
+					done();
+				}, 96);
+			}, 96);
+		});
 
-  asyncTest("debounce asap", 4, function() {
-    var a, b;
-    var counter = 0;
-    var incr = function(){ return ++counter; };
-    var debouncedIncr = _.debounce(incr, 64, true);
-    a = debouncedIncr();
-    b = debouncedIncr();
-    equal(a, 1);
-    equal(b, 1);
-    equal(counter, 1, 'incr was called immediately');
-    _.delay(debouncedIncr, 16);
-    _.delay(debouncedIncr, 32);
-    _.delay(debouncedIncr, 48);
-    _.delay(function(){ equal(counter, 1, "incr was debounced"); start(); }, 128);
-  });
+		it("debounce", function (done) {
+			var counter = 0;
+			var incr = function () {
+				counter++;
+			};
+			var debouncedIncr = _.debounce(incr, 32);
+			debouncedIncr();
+			debouncedIncr();
+			_.delay(debouncedIncr, 16);
+			_.delay(function () {
+				equal(counter, 1, "incr was debounced");
+				done();
+			}, 96);
+		});
 
-  asyncTest("debounce asap recursively", 2, function() {
-    var counter = 0;
-    var debouncedIncr = _.debounce(function(){
-      counter++;
-      if (counter < 10) debouncedIncr();
-    }, 32, true);
-    debouncedIncr();
-    equal(counter, 1, "incr was called immediately");
-    _.delay(function(){ equal(counter, 1, "incr was debounced"); start(); }, 96);
-  });
+		it("debounce asap", function (done) {
+			var a, b;
+			var counter = 0;
+			var incr = function () {
+				return ++counter;
+			};
+			var debouncedIncr = _.debounce(incr, 64, true);
+			a = debouncedIncr();
+			b = debouncedIncr();
+			equal(a, 1);
+			equal(b, 1);
+			equal(counter, 1, "incr was called immediately");
+			_.delay(debouncedIncr, 16);
+			_.delay(debouncedIncr, 32);
+			_.delay(debouncedIncr, 48);
+			_.delay(function () {
+				equal(counter, 1, "incr was debounced");
+				done();
+			}, 128);
+		});
 
-  test("once", function() {
-    var num = 0;
-    var increment = _.once(function(){ num++; });
-    increment();
-    increment();
-    equal(num, 1);
-  });
+		it("debounce asap recursively", function (done) {
+			var counter = 0;
+			var debouncedIncr = _.debounce(function () {
+				counter++;
+				if (counter < 10) {
+					debouncedIncr();
+				}
+			}, 32, true);
+			debouncedIncr();
+			equal(counter, 1, "incr was called immediately");
+			_.delay(function () {
+				equal(counter, 1, "incr was debounced");
+				done();
+			}, 96);
+		});
 
-  test("Recursive onced function.", 1, function() {
-    var f = _.once(function(){
-      ok(true);
-      f();
-    });
-    f();
-  });
+		it("once", function () {
+			var num = 0;
+			var increment = _.once(function () {
+				num++;
+			});
+			increment();
+			increment();
+			equal(num, 1);
+		});
 
-  test("wrap", function() {
-    var greet = function(name){ return "hi: " + name; };
-    var backwards = _.wrap(greet, function(func, name){ return func(name) + ' ' + name.split('').reverse().join(''); });
-    equal(backwards('moe'), 'hi: moe eom', 'wrapped the salutation function');
+		it("Recursive onced function.", function () {
+			var f = _.once(function () {
+				ok(true);
+				f();
+			});
+			f();
+		});
 
-    var inner = function(){ return "Hello "; };
-    var obj   = {name : "Moe"};
-    obj.hi    = _.wrap(inner, function(fn){ return fn() + this.name; });
-    equal(obj.hi(), "Hello Moe");
+		it("wrap", function () {
+			var greet = function (name) {
+				return "hi: " + name;
+			};
+			var backwards = _.wrap(greet, function (func, name) {
+				return func(name) + " " + name.split("").reverse().join("");
+			});
+			equal(backwards("moe"), "hi: moe eom", "wrapped the salutation function");
 
-    var noop    = function(){};
-    var wrapped = _.wrap(noop, function(fn){ return Array.prototype.slice.call(arguments, 0); });
-    var ret     = wrapped(['whats', 'your'], 'vector', 'victor');
-    deepEqual(ret, [noop, ['whats', 'your'], 'vector', 'victor']);
-  });
+			var inner = function () {
+				return "Hello ";
+			};
+			var obj = {
+				name: "Moe"
+			};
+			obj.hi = _.wrap(inner, function (fn) {
+				return fn() + this.name;
+			});
+			equal(obj.hi(), "Hello Moe");
 
-  test("compose", function() {
-    var greet = function(name){ return "hi: " + name; };
-    var exclaim = function(sentence){ return sentence + '!'; };
-    var composed = _.compose(exclaim, greet);
-    equal(composed('moe'), 'hi: moe!', 'can compose a function that takes another');
+			var noop = function () {};
+			var wrapped = _.wrap(noop, function ( /*fn*/ ) {
+				return Array.prototype.slice.call(arguments, 0);
+			});
+			var ret = wrapped(["whats", "your"], "vector", "victor");
+			deepEqual(ret, [noop, ["whats", "your"], "vector", "victor"]);
+		});
 
-    composed = _.compose(greet, exclaim);
-    equal(composed('moe'), 'hi: moe!', 'in this case, the functions are also commutative');
-  });
+		it("compose", function () {
+			var greet = function (name) {
+				return "hi: " + name;
+			};
+			var exclaim = function (sentence) {
+				return sentence + "!";
+			};
+			var composed = _.compose(exclaim, greet);
+			equal(composed("moe"), "hi: moe!", "can compose a function that takes another");
 
-  test("after", function() {
-    var testAfter = function(afterAmount, timesCalled) {
-      var afterCalled = 0;
-      var after = _.after(afterAmount, function() {
-        afterCalled++;
-      });
-      while (timesCalled--) after();
-      return afterCalled;
-    };
+			composed = _.compose(greet, exclaim);
+			equal(composed("moe"), "hi: moe!", "in this case, the functions are also commutative");
+		});
 
-    equal(testAfter(5, 5), 1, "after(N) should fire after being called N times");
-    equal(testAfter(5, 4), 0, "after(N) should not fire unless called N times");
-    equal(testAfter(0, 0), 0, "after(0) should not fire immediately");
-    equal(testAfter(0, 1), 1, "after(0) should fire when first invoked");
-  });
+		it("after", function () {
+			var testAfter = function (afterAmount, timesCalled) {
+				var afterCalled = 0;
+				var after = _.after(afterAmount, function () {
+					afterCalled++;
+				});
+				while (timesCalled--) {
+					after();
+				}
+				return afterCalled;
+			};
 
-});
+			equal(testAfter(5, 5), 1, "after(N) should fire after being called N times");
+			equal(testAfter(5, 4), 0, "after(N) should not fire unless called N times");
+			equal(testAfter(0, 0), 0, "after(0) should not fire immediately");
+			equal(testAfter(0, 1), 1, "after(0) should fire when first invoked");
+		});
+
+	});
+})();

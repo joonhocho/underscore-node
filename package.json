@@ -30,6 +30,6 @@
   },
   "devDependencies": {
     "mocha": "~1.12.1",
-    "should": "~1.2.2"
+    "chai": "~1.7.2"
   }
 }
