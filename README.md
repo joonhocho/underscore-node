@@ -1,9 +1,9 @@
 What is Underscore for Node.js
 ==============================
 
-[Underscore for Node.js][1] without cross-browser checks.
+[Underscore.js for Node.js][1] without cross-browser checks.
 
-This is a ported version of [Underscore][2] targeted for Node.js on V8 JavaScript Engine.
+This is a ported version of [Underscore.js][2] targeted for Node.js on V8 JavaScript Engine.
 
 Its purpose is to have the exactly same APIs and functionalities but with better perfomance and smaller code size.
 
