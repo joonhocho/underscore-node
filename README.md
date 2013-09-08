@@ -1,5 +1,5 @@
-underscore-node
-===============
+What is Underscore for Node.js
+==============================
 
 [Underscore for Node.js][1] without cross-browser checks.
 
@@ -10,6 +10,19 @@ Its purpose is to have the exactly same APIs and functionalities but with better
 It is accomplished by eliminating unnecessary cross-browser compatibility efforts.
 
 Its APIs can be found in [here][3], and it is [fully tested][4] against the same tests for original Underscore.
+
+
+How To Use
+==========
+
+To install via NPM package:
+
+`npm install underscore-node`
+
+
+Inside your Node.js project:
+
+`var _ = require('underscore-node');`
 
 
 Disclaimer
