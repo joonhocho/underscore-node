@@ -15,7 +15,9 @@ Its APIs can be found in [here][2], and it is fully tested with the same tests f
 Disclaimer
 ==========
 
-This version is targeted for Node.js on V8, NOT for browsers or any other JavaScript engines.
+This version is targeted for Node.js on V8 JavaScript Engine
+
+It is NOT to be used on browsers or any other JavaScript engines.
 
 This means there will be no efforts to support different JavaScript versions or behaviours.
 
